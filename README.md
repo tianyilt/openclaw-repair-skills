@@ -2,6 +2,8 @@
 
 <div align="center">
 
+<img src="logo.jpg" alt="Claw Doctor" width="160">
+
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-OpenClaw%20%7C%20NanoClaw%20%7C%20Claude%20Code-orange?style=for-the-badge)](https://github.com/tianyilt/openclaw-repair-skills)
 [![Skills](https://img.shields.io/badge/Skills-1-brightgreen?style=for-the-badge)](skills/)
