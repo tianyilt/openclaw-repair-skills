@@ -1,6 +1,7 @@
 ---
 name: lobster-doctor
 description: Diagnose and fix common OpenClaw / NanoClaw issues — broken skills, missing scripts, API key failures, path resolution bugs, and configuration problems. The meta-skill for when your claw is broken.
+version: 1.0.0
 keywords:
   - openclaw
   - nanoclaw
@@ -12,7 +13,14 @@ keywords:
   - api-key
   - configuration
   - repair
-license: MIT
+metadata:
+  openclaw:
+    emoji: "🦞"
+    homepage: https://github.com/tianyilt/openclaw-repair-skills
+    requires:
+      anyBins:
+        - python3
+        - python
 ---
 
 # Lobster Doctor — OpenClaw Self-Repair Skill
