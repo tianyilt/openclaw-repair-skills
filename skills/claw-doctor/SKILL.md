@@ -1,5 +1,5 @@
 ---
-name: lobster-doctor
+name: claw-doctor
 description: Diagnose and fix common OpenClaw / NanoClaw issues — broken skills, missing scripts, API key failures, path resolution bugs, and configuration problems. The meta-skill for when your claw is broken.
 version: 1.0.0
 keywords:
@@ -23,7 +23,7 @@ metadata:
         - python
 ---
 
-# Lobster Doctor — OpenClaw Self-Repair Skill
+# Claw Doctor — OpenClaw Self-Repair Skill
 
 This skill diagnoses and fixes common OpenClaw / NanoClaw problems. When something breaks, run through the checklist below before giving up.
 
@@ -284,13 +284,13 @@ echo "=== Done ==="
 This skill also works as a Claude Code user-invocable skill. Add the following to `~/.claude/CLAUDE.md` under `## User-Invocable Skills`:
 
 ```markdown
-### lobster-doctor
+### claw-doctor
 
 Diagnose and fix OpenClaw / NanoClaw problems.
 
 **Trigger**: user mentions skill not loading, script not found, API key error, SKILL.md broken, OpenClaw not working
 
-**Procedure**: Follow the lobster-doctor SKILL.md checklist:
+**Procedure**: Follow the claw-doctor SKILL.md checklist:
 1. Identify symptom category (trigger / script path / API key / dependency / YAML / post-update)
 2. Run the relevant diagnostic commands
 3. Apply the fix and verify with the Full Health Check

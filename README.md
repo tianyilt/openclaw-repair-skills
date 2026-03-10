@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-OpenClaw%20%7C%20NanoClaw%20%7C%20Claude%20Code-orange?style=for-the-badge)](https://github.com/tianyilt/openclaw-repair-skills)
 [![Skills](https://img.shields.io/badge/Skills-1-brightgreen?style=for-the-badge)](skills/)
-[![ClawHub](https://img.shields.io/badge/ClawHub-lobster--doctor-red?style=for-the-badge)](https://clawhub.ai/skills/lobster-doctor)
+[![ClawHub](https://img.shields.io/badge/ClawHub-claw--doctor-red?style=for-the-badge)](https://clawhub.ai/skills/claw-doctor)
 
 **Open-source skills for diagnosing and fixing OpenClaw / NanoClaw problems.**
 
@@ -33,14 +33,14 @@ These skills are compatible with:
 
 | Skill | Description |
 |-------|-------------|
-| [lobster-doctor](skills/lobster-doctor/SKILL.md) | Diagnose and fix common OpenClaw issues: skill not triggering, script path errors, API key failures, missing dependencies, YAML frontmatter bugs, post-update breakage |
+| [claw-doctor](skills/claw-doctor/SKILL.md) | Diagnose and fix common OpenClaw issues: skill not triggering, script path errors, API key failures, missing dependencies, YAML frontmatter bugs, post-update breakage |
 
 ### Install
 
 #### Via ClawHub (recommended)
 
 ```bash
-clawhub install lobster-doctor
+clawhub install claw-doctor
 ```
 
 #### Manual (git clone)
@@ -59,9 +59,9 @@ Skills are picked up automatically on the next session.
 
 #### Claude Code
 
-1. Copy the Claude Code trigger block from the bottom of [skills/lobster-doctor/SKILL.md](skills/lobster-doctor/SKILL.md)
+1. Copy the Claude Code trigger block from the bottom of [skills/claw-doctor/SKILL.md](skills/claw-doctor/SKILL.md)
 2. Paste it into `~/.claude/CLAUDE.md` under `## User-Invocable Skills`
-3. Invoke with `/lobster-doctor`
+3. Invoke with `/claw-doctor`
 
 ### Contributing
 
@@ -93,14 +93,14 @@ Found a new failure mode? Open a PR with:
 
 | Skill | 说明 |
 |-------|------|
-| [lobster-doctor](skills/lobster-doctor/SKILL.md) | 诊断并修复常见 OpenClaw 问题：skill 不触发、脚本路径错误、API key 未配置、依赖缺失、YAML 格式错误、更新后失效等 |
+| [claw-doctor](skills/claw-doctor/SKILL.md) | 诊断并修复常见 OpenClaw 问题：skill 不触发、脚本路径错误、API key 未配置、依赖缺失、YAML 格式错误、更新后失效等 |
 
 ### 安装
 
 #### 通过 ClawHub 安装（推荐）
 
 ```bash
-clawhub install lobster-doctor
+clawhub install claw-doctor
 ```
 
 #### 手动安装（git clone）
@@ -119,9 +119,9 @@ cp -r openclaw-repair-skills/skills/* ~/.openclaw/skills/
 
 #### Claude Code
 
-1. 复制 [skills/lobster-doctor/SKILL.md](skills/lobster-doctor/SKILL.md) 末尾的 Claude Code 触发块
+1. 复制 [skills/claw-doctor/SKILL.md](skills/claw-doctor/SKILL.md) 末尾的 Claude Code 触发块
 2. 粘贴到 `~/.claude/CLAUDE.md` 的 `## User-Invocable Skills` 下
-3. 用 `/lobster-doctor` 调用
+3. 用 `/claw-doctor` 调用
 
 ### 贡献
 
