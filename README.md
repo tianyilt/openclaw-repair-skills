@@ -5,6 +5,7 @@
 [![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 [![Platform](https://img.shields.io/badge/Platform-OpenClaw%20%7C%20NanoClaw%20%7C%20Claude%20Code-orange?style=for-the-badge)](https://github.com/tianyilt/openclaw-repair-skills)
 [![Skills](https://img.shields.io/badge/Skills-1-brightgreen?style=for-the-badge)](skills/)
+[![ClawHub](https://img.shields.io/badge/ClawHub-lobster--doctor-red?style=for-the-badge)](https://clawhub.ai/skills/lobster-doctor)
 
 **Open-source skills for diagnosing and fixing OpenClaw / NanoClaw problems.**
 
@@ -36,7 +37,13 @@ These skills are compatible with:
 
 ### Install
 
-#### OpenClaw / NanoClaw
+#### Via ClawHub (recommended)
+
+```bash
+clawhub install lobster-doctor
+```
+
+#### Manual (git clone)
 
 ```bash
 git clone https://github.com/tianyilt/openclaw-repair-skills.git
@@ -90,7 +97,13 @@ Found a new failure mode? Open a PR with:
 
 ### 安装
 
-#### OpenClaw / NanoClaw
+#### 通过 ClawHub 安装（推荐）
+
+```bash
+clawhub install lobster-doctor
+```
+
+#### 手动安装（git clone）
 
 ```bash
 git clone https://github.com/tianyilt/openclaw-repair-skills.git
