@@ -298,6 +298,123 @@ Diagnose and fix OpenClaw / NanoClaw problems.
 
 ---
 
+## Problem 7 — 飞书 Bot 用了错误的模型
+
+**症状**：飞书里回复的模型和 `openclaw.json` 配置的不一致，或 `/new` 之后还是老模型。
+
+**根因 1 — Session 里的 model override 覆盖了 agent 配置**
+
+Session 文件会持久化上一次手动切换的模型，重启后也不会清除。
+
+```bash
+# 找出哪个 session 有 model override
+python3 -c "
+import json
+for agent in ['main', 'sii']:
+    path = f'/Users/tianyiliang/.openclaw/agents/{agent}/sessions/sessions.json'  # 按实际路径调整
+    try:
+        data = json.load(open(path))
+        for k, v in data.items():
+            if v.get('model'):
+                print(f'[{agent}] {k}: model={v[\"model\"]}')
+    except: pass
+"
+```
+
+**修复**：删掉对应 session 里的 `model`/`modelProvider` 字段，或直接删掉整个 session 条目，再重启 gateway：
+
+```bash
+openclaw gateway restart
+```
+
+---
+
+**根因 2 — `main` agent 不在 `agents.list`，binding 被忽略**
+
+`bindings` 里写了 `"agentId": "main"` 但不生效——因为 `main` 是内置 agent，不在 `agents.list` 里就不能作为路由目标。
+
+**诊断**：
+```bash
+openclaw agents list --bindings   # 看 main 是否出现
+```
+
+**修复**：把 `main` 显式加入 `agents.list`：
+
+```bash
+python3 -c "
+import json
+path = '~/.openclaw/openclaw.json'  # 按实际路径
+cfg = json.load(open(path))
+if not any(a['id'] == 'main' for a in cfg['agents']['list']):
+    cfg['agents']['list'].insert(0, {
+        'id': 'main',
+        'name': 'main',
+        'workspace': cfg['agents']['defaults']['workspace'],
+        'model': {'primary': 'custom-local/gemini-3-pro-preview', 'fallbacks': []}
+    })
+    json.dump(cfg, open(path,'w'), indent=2, ensure_ascii=False)
+    print('Added main to agents.list')
+"
+```
+
+---
+
+**根因 3 — Model ID 和本地代理不匹配导致 fallback**
+
+`openclaw.json` 里配的 model ID 在 localhost proxy 上不存在，静默 fallback 到下一个。
+
+```bash
+# 查实际可用的模型
+curl -s http://localhost:8317/v1/models -H "Authorization: Bearer your-api-key-1" \
+  | python3 -c "import json,sys; [print(m['id']) for m in json.load(sys.stdin)['data']]" | sort
+```
+
+对比 `openclaw.json` 里的 model ID，确保完全匹配。
+
+---
+
+## Problem 8 — Cron Jobs 走了 OpenRouter
+
+**症状**：`openclaw status` 里 cron session 显示 `model=openrouter/auto`，不应该走云端。
+
+**根因**：session 里有 `authProfileOverride: openrouter:*` 被持久化（某次 auth 自动切换的残留）。
+
+**诊断**：
+```bash
+python3 -c "
+import json
+for agent in ['main', 'sii']:
+    path = f'~/.openclaw/agents/{agent}/sessions/sessions.json'
+    try:
+        data = json.load(open(path))
+        for k, v in data.items():
+            if 'cron' in k and 'openrouter' in v.get('authProfileOverride',''):
+                print(f'[{agent}] {k}: auth={v[\"authProfileOverride\"]} model={v.get(\"model\")}')
+    except: pass
+"
+```
+
+**修复**：清掉所有 cron session 里的 openrouter 覆盖：
+
+```bash
+python3 -c "
+import json, glob
+for path in glob.glob('~/.openclaw/agents/*/sessions/sessions.json'):
+    data = json.load(open(path))
+    changed = False
+    for k, v in data.items():
+        if 'cron' in k and 'openrouter' in v.get('authProfileOverride',''):
+            for field in ['model','modelProvider','authProfileOverride','authProfileOverrideSource','authProfileOverrideCompactionCount']:
+                v.pop(field, None)
+            changed = True
+            print(f'Fixed: {k}')
+    if changed:
+        json.dump(data, open(path,'w'), ensure_ascii=False)
+" && openclaw gateway restart
+```
+
+---
+
 ## Contributing
 
 Found a new OpenClaw failure mode? Open a PR with:
