@@ -1,7 +1,7 @@
 ---
 name: claw-doctor
 description: Diagnose and fix common OpenClaw / NanoClaw issues — broken skills, missing scripts, API key failures, path resolution bugs, and configuration problems. The meta-skill for when your claw is broken.
-version: 1.0.0
+version: 1.1.0
 keywords:
   - openclaw
   - nanoclaw
@@ -412,6 +412,73 @@ for path in glob.glob('~/.openclaw/agents/*/sessions/sessions.json'):
         json.dump(data, open(path,'w'), ensure_ascii=False)
 " && openclaw gateway restart
 ```
+
+---
+
+## Problem 9 — Gateway 无反应 / `device signature invalid`
+
+**症状**：`openclaw status` 报 `RPC probe: failed`，错误为 `gateway closed (1008): device signature invalid`。飞书 bot 不回复，gateway 看起来在跑但 CLI 连不上。
+
+**根因**：升级 openclaw 版本后，旧版 LaunchAgent（`com.clawdbot.gateway`，加载 `openclaw-cn`）没有被清理，与新版 `ai.openclaw.gateway` 同时注册开机启动。旧进程先抢占 18789 端口，新版 CLI 因 device signature 格式不兼容被拒绝。
+
+**诊断**：
+```bash
+launchctl list | grep -i claw
+# 如果同时出现 com.clawdbot.gateway 和 ai.openclaw.gateway，就是这个问题
+
+openclaw gateway status 2>&1 | grep -E "RPC|device|pid"
+```
+
+**修复**：
+```bash
+# 1. 备份并禁用旧版 LaunchAgent
+cp ~/Library/LaunchAgents/com.clawdbot.gateway.plist \
+   ~/Library/LaunchAgents/com.clawdbot.gateway.plist.bak
+launchctl bootout gui/$UID/com.clawdbot.gateway
+mv ~/Library/LaunchAgents/com.clawdbot.gateway.plist \
+   ~/Library/LaunchAgents/com.clawdbot.gateway.plist.disabled
+
+# 2. 重启新版 gateway
+openclaw gateway restart
+
+# 验证
+openclaw gateway status 2>&1 | grep "RPC probe"
+# 期望输出：RPC probe: ok
+```
+
+**说明**：`.plist.disabled` 文件 launchd 开机不会加载（只识别 `.plist` 后缀），相当于禁用但保留备份。
+
+---
+
+## Problem 10 — 非 Owner 用户被拦截（OAuth 授权 / 工具调用）
+
+**症状**：非应用 Owner 的飞书用户发消息后，授权入口或工具调用被拒绝，日志中出现 `OwnerAccessDeniedError` 或 `Permission denied: Only the app owner is authorized`。
+
+**根因**：`assertOwnerAccessStrict` 默认 `ownerOnly=true`，所有非 Owner 用户全部拒绝。这是 openclaw-lark 上游的已知问题（issues #5、#12）。
+
+**修复方案 A — 配置关闭（推荐）**：在 `openclaw.json` 的飞书 channel 里加 `uat.ownerOnly: false`：
+
+```bash
+# 用 python3 安全写入，避免手编 JSON 出错
+python3 - <<'EOF'
+import json
+
+path = '/Users/tianyiliang/.openclaw/openclaw.json'  # 按实际路径调整
+cfg = json.load(open(path))
+ch = cfg.setdefault('channels', {}).setdefault('feishu', {})
+uat = ch.setdefault('uat', {})
+uat['enabled'] = True
+uat['ownerOnly'] = False
+json.dump(cfg, open(path, 'w'), indent=2, ensure_ascii=False)
+print('Done. Run: openclaw gateway restart')
+EOF
+```
+
+**修复方案 B — 升级插件**：如果你使用 workspace 源码版插件（`openclaw-lark`），该 patch 已包含在 PR #11 中：
+- `src/core/config-schema.ts`：`UATConfigSchema` 加 `ownerOnly?: boolean`
+- `src/core/owner-policy.ts`：`assertOwnerAccessStrict` 里检查 `ownerOnly` flag
+
+**验证**：重启 gateway 后，非 Owner 用户发消息，日志中不再出现 `OwnerAccessDeniedError`。
 
 ---
 
